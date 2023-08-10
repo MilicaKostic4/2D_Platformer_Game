@@ -77,11 +77,6 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-
-    }//registrovanje kada je objekat dotakao tlo
-
     private bool isGrounded()
     {
         // kreira se virtuelna linija koja kada dodje u dodir sa objektom koji ima collider vraca se true
@@ -96,5 +91,10 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, new Vector2(transform.localScale.x, 0), 0.1f, wallLayer);
         return raycastHit.collider != null;
     }
+
+    public bool canAttack()
+    {
+        return horizontalInput == 0 && isGrounded() && !onWall();
+    } // moze da napadne ako se ne krece i ako je na zemlji tj. nije zakacen za zid
 
 }
