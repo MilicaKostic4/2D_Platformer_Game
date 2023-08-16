@@ -8,15 +8,29 @@ public class EnemyProjectile : EnemyDamage
     [SerializeField] private float resetTime;
     private float lifetime;
 
+    private Animator anim;
+    private BoxCollider2D coll;
 
-    public void ActiveProjectile()
+    private bool hit;
+
+    private void Awake()
     {
+        anim = GetComponent<Animator>();
+        coll = GetComponent<BoxCollider2D>();
+    }
+
+
+    public void ActivateProjectile()
+    {
+        hit = false;
         lifetime = 0;
         gameObject.SetActive(true);
+        coll.enabled = true;
     }
 
     private void Update()
     {
+        if (hit) return;
         float movementSpeed = speed * Time.deltaTime;
         transform.Translate(movementSpeed, 0, 0);
 
@@ -27,7 +41,18 @@ public class EnemyProjectile : EnemyDamage
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        hit = true;
         base.OnTriggerEnter2D(collision);
+        coll.enabled = false;
+
+        if (anim != null)
+            anim.SetTrigger("explode"); //Kada je pucanj u pitanju on ce da eksplodira
+        else
+            gameObject.SetActive(false); //Deaktiviranje strele kada dodirne drugi objekat
+    }
+
+    private void Deactivate()
+    {
         gameObject.SetActive(false);
     }
 }
