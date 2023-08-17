@@ -5,6 +5,9 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float attackCooldown; //koliko vremena treba da prodje da bi mogao da se ispali sledeci pucanj
     [SerializeField] private Transform firePoint;
     [SerializeField] private GameObject[] fireballs;
+
+    [SerializeField] private AudioClip fireballSound;
+
     private Animator anim; 
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity; //vreme proslo od prethodnog pucnja
@@ -25,6 +28,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
+        SoundManager.instance.PlaySound(fireballSound);
+
         anim.SetTrigger("attack");
         cooldownTimer = 0;
 
