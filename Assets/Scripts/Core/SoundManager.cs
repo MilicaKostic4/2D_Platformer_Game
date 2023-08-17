@@ -7,8 +7,17 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
         source = GetComponent<AudioSource>();
+
+        //Muzika u pozadini se nastavlja kada se predje na novu scenu
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        //Unistavanje novih zvukova ukoliko jedan vec postoji
+        else if(instance != null && instance != this)
+            Destroy(gameObject);
     }
 
     public void PlaySound(AudioClip _sound)

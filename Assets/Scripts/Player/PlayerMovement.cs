@@ -4,8 +4,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed; //Serijalizovano da bi moglo da se edituje u Unity-ju
     [SerializeField] private float jumpPower;
+
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask wallLayer;
+
+    [SerializeField] private AudioClip jumpSound;
+
     private Rigidbody2D body;
     private Animator anim;
     private BoxCollider2D boxCollider;
@@ -48,7 +52,13 @@ public class PlayerMovement : MonoBehaviour
                 body.gravityScale = 7; //brzina padanja
 
             if (Input.GetKey(KeyCode.Space))
+            {
                 Jump();
+
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded())
+                    SoundManager.instance.PlaySound(jumpSound);
+            }
+                
         }
         else
             wallJumpCooldown += Time.deltaTime;
