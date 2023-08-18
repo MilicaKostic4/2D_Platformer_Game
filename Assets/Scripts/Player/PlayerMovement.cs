@@ -2,12 +2,27 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header ("Movement params")]
     [SerializeField] private float speed; //Serijalizovano da bi moglo da se edituje u Unity-ju
     [SerializeField] private float jumpPower;
 
+    [Header("Coyote time")]
+    [SerializeField] private float coyoteTime; //Koliko dugo igrac moze biti u vazduhu pre nego sto skoci
+    private float coyoteCounter; //Koliko je vremena proslo
+
+    [Header("Multiple jumps")]
+    [SerializeField] private int extraJumps;
+    private int jumpCounter; //Koliko skokova imam u ovom momentu
+
+    [Header("Wall jumping")]
+    [SerializeField] private float wallJumpX; //Koliko mogu da se krecem po horizontali
+    [SerializeField] private float wallJumpY; //Koliko mogu visoko da skocim
+
+    [Header("Layers")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask wallLayer;
 
+    [Header("Sounds")]
     [SerializeField] private AudioClip jumpSound;
 
     private Rigidbody2D body;
@@ -37,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("run", horizontalInput != 0); //ne pokrece se run sve dok se ne pritisne leva ili desna strelica
         anim.SetBool("grounded", isGrounded());
 
+        /*
         //skakanje uz zid
         if (wallJumpCooldown > 0.2f)
         {
@@ -62,14 +78,47 @@ public class PlayerMovement : MonoBehaviour
         }
         else
             wallJumpCooldown += Time.deltaTime;
+        */
+
+        //Skok
+        if (Input.GetKeyDown(KeyCode.Space))
+            Jump();
+
+        //Podesiva visina skoka
+        if(Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0)
+            body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
+
+        if (onWall())
+        {
+            body.gravityScale = 0;
+            body.velocity = Vector2.zero;
+        }
+        else
+        {
+            body.gravityScale = 7;
+            body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
+
+            if (isGrounded())
+            {
+                coyoteCounter = coyoteTime; //Resetovanje brojaca kada je igrac na zemlji
+                jumpCounter = extraJumps; //Resetovanje brojaca skokova
+            }
+            else
+                coyoteCounter -= Time.deltaTime; //Odbrojavanje
+        }
+            
     }
 
     private void Jump()
     {
-        if(isGrounded())
+        if (coyoteCounter <= 0 && !onWall() && jumpCounter <= 0) return;
+        SoundManager.instance.PlaySound(jumpSound);
+
+        /*
+        if (isGrounded())
         {
             body.velocity = new Vector2(body.velocity.x, jumpPower);
-            anim.SetTrigger("jump");
+            
         }
         else if(onWall() && !isGrounded())
         {
@@ -84,7 +133,36 @@ public class PlayerMovement : MonoBehaviour
             
             wallJumpCooldown = 0;
         }
+        */
 
+        if (onWall())
+            WallJump();
+        else
+        {
+            if (isGrounded())
+                body.velocity = new Vector2(body.velocity.x, jumpPower);
+            else
+            {
+                if(coyoteCounter > 0)
+                    body.velocity = new Vector2(body.velocity.x, jumpPower);
+                else
+                {
+                    if(jumpCounter > 0) //Skakanje i smanjivanje brojaca skokova
+                    {
+                        body.velocity = new Vector2(body.velocity.x, jumpPower);
+                        jumpCounter--;
+                    }
+                }
+            }
+            coyoteCounter = 0; //Resetovanje da bi se izbegli dupli skokovi
+        }
+    }
+
+    private void WallJump()
+    {
+        //Uzimam trenutni velocity i dodajem jos snage na to
+        body.AddForce(new Vector2(-Mathf.Sign(transform.localScale.x) * wallJumpX, wallJumpY));
+        wallJumpCooldown = 0;
     }
 
     private bool isGrounded()
