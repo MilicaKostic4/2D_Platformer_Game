@@ -83,5 +83,18 @@ public class Health : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-    
+
+
+    public void Respawn()
+    {
+        dead = false;
+        AddHealth(startingHealth);
+        anim.ResetTrigger("die");
+        anim.Play("Idle");
+        StartCoroutine(Invunerability());
+
+        //aktivacija
+        foreach (Behaviour component in components)
+            component.enabled = true;
+    }
 }
