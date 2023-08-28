@@ -25,7 +25,10 @@ public class Finish : MonoBehaviour
 
     private void CompleteLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1 );
+        if(SceneManager.GetActiveScene().buildIndex == 3)
+            SceneManager.LoadScene(0);
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1 );
     }
 
 

@@ -59185,7 +59185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2137204828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61020,7 +61020,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   speed: 3
-  range: 10
+  range: 13
   checkDelay: 0.75
   playerLayer:
     serializedVersion: 2
